@@ -156,3 +156,34 @@ def sendDigitaltoPrM(myblob: func.InputStream):
         dowlload_blob(blob_client,digitalDirectory+ "/"+blob_name)
     
     sendtoPrM(digitalDirectory,org_key,user,process_mining_api_key,stage2_config)
+
+    blob_client = blob_service_client.get_blob_client(container="stage2", blob="deleteFiles.trigger.txt")
+    input_stream = 'Trigger Delete'
+    blob_client.upload_blob(input_stream, blob_type="BlockBlob")
+
+    
+
+@app.blob_trigger(arg_name="myblob", path="stage2/deleteFiles.trigger.txt",
+                               connection="AzureWebJobsStorage") 
+def deleteFiles(myblob: func.InputStream):
+    logging.info(f"Python blob trigger function processed blob"
+                f"Name: {myblob.name}"
+                f"Blob Size: {myblob.length} bytes")
+
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    with open(os.path.join(script_dir, "stage2.yaml"), "r") as f:
+        stage2_config = yaml.load(f, Loader=yaml.FullLoader)
+
+    connection_string = os.environ['AzureWebJobsStorage']
+
+    container_name = stage2_config['bucket-directories']['container']
+
+    blob_service_client = BlobServiceClient.from_connection_string(connection_string)
+    
+    input_container = blob_service_client.get_container_client(container=container_name)
+    blob_list = input_container.list_blobs()
+
+    for blob in blob_list:
+
+        blob_client = input_container.get_blob_client(blob.name)
+        blob_client.delete_blob()
