@@ -1,0 +1,21 @@
+# Config for stage2.py
+directories:
+  input: /tmp/stage2/input
+  currentOrder: currentOrder
+  instransit: Intransit
+  digital: Digital
+  work: /tmp/stage2/.working
+  error: /tmp/stage2/errors
+bucket-directories:
+  container: stage2
+  instransit: stage2/Intransit
+  digital: stage2/Digital
+  errors: stage2/errors
+process-mining:
+  # api-key: dqa39i20c945f41l
+  # user: bp_mariasanin_pineda@colpal.com
+  url: https://pmdev.salientprocess.com
+  # org-key: 7430f6e8
+  project-key-order: current-fp
+  project-key-instransit: instransit-fp
+  project-key-digital: digital-fp
