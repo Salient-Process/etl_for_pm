@@ -40,7 +40,7 @@ def createKey(url,user,apikey):
     logging.info('Creating Token')
     api_url = '%s/integration/sign'%url
     body = {'uid':user,'apiKey':apikey}
-    response = requests.post(api_url, json=body,verify=False)
+    response = requests.post(api_url, json=body)
     if response.json()['success']:
         return response.json()['sign']
     else:
@@ -59,7 +59,7 @@ def uploadFile(file,url,projectkey,orgkey,path,work_dir,user,apikey):
         headers = {'Authorization': 'Bearer %s'% token}
         files = {'file': (fileName, open(zipPath, 'rb'),'text/zip')}
         param = {'org': orgkey}
-        upload = requests.post(api_url,files=files,params=param, headers=headers,verify=False)
+        upload = requests.post(api_url,files=files,params=param, headers=headers)
         logging.info("upload: " +str(upload.json()))
         jobId = upload.json()['data']
         logging.info("JobId: " +jobId)
@@ -76,7 +76,7 @@ def createLog(url,projectkey,orgkey,user,apikey):
         api_url = "%s/integration/csv/%s/create-log" % (url, projectkey)
         param = {'org': orgkey}
         headers = {'Authorization': 'Bearer %s'% token}
-        response = requests.post(api_url,headers=headers, params=param,verify=False)
+        response = requests.post(api_url,headers=headers, params=param)
         jobId = response.json()['data']
         if response.json()['success']:
             return jobId
@@ -89,7 +89,7 @@ def jobStatus(jobKey,url,user,apikey):
     else:
         api_url = "%s/integration/csv/job-status/%s" % (url, jobKey)
         headers = {'Authorization': 'Bearer %s'%token}
-        response = requests.get(api_url,headers=headers,verify=False)
+        response = requests.get(api_url,headers=headers)
         if response.json()['success']:
             return response.json()
         else:
