@@ -12,6 +12,8 @@ def sendtoPrM(directory,org_key,user,process_mining_api_key,config):
             projectKey = config['process-mining']['project-key-order']
         elif 'IntransitItem' in file:
             projectKey = config['process-mining']['project-key-instransit']
+        elif 'Sonoco' in file:
+            projectKey = config['process-mining']['project-key-sonoco']
         else:
             projectKey = config['process-mining']['project-key-digital']
 

@@ -18,6 +18,7 @@ def process_csv_file(directory,org_key,url,projectKey,user,process_mining_api_ke
 
     base_csv_file_name = os.path.basename(file_path)
     
+    #Remove verify = False
     #getFileAndZip(base_csv_file_name,file_path)
 
     upload_csv_and_createlog(base_csv_file_name,projectKey,org_key,file_path,directory,url,user,process_mining_api_key)

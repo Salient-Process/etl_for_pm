@@ -187,3 +187,55 @@ def deleteFiles(myblob: func.InputStream):
 
         blob_client = input_container.get_blob_client(blob.name)
         blob_client.delete_blob()
+
+
+@app.blob_trigger(arg_name="myblob", path="stage2/sonoco/sendToPrM.trigger.txt",
+                               connection="AzureWebJobsStorage") 
+def sendSonocoToPrM(myblob: func.InputStream):
+    logging.info(f"Python blob trigger function processed blob"
+                f"Name: {myblob.name}"
+                f"Blob Size: {myblob.length} bytes")
+
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    with open(os.path.join(script_dir, "stage2.yaml"), "r") as f:
+        stage2_config = yaml.load(f, Loader=yaml.FullLoader)
+
+    connection_string = os.environ['AzureWebJobsStorage']
+    org_key = os.environ['orgKey']
+    user = os.environ['user']
+    process_mining_api_key = os.environ['apiKey']
+
+    container_name = stage2_config['bucket-directories']['container']
+    stage2_input_dir = stage2_config["directories"]["input"]
+    sonoco = stage2_config['directories']['sonoco']
+    sonocoContainer = stage2_config['bucket-directories']['sonoco']
+
+    sonocoDirectory =  os.path.join(stage2_input_dir,sonoco)
+
+    blob_service_client = BlobServiceClient.from_connection_string(connection_string)
+    
+    input_container = blob_service_client.get_container_client(container=sonocoContainer)
+    blobCurrent = input_container.get_blob_client("sendToPrM.trigger.txt")
+    
+    if blobCurrent.exists():
+        logging.debug(f"Deleting bucket file: sendToPrM.trigger.txt")
+        blobCurrent.delete_blob()
+    
+    input_container = blob_service_client.get_container_client(container=container_name)
+    blob_list = input_container.list_blobs(name_starts_with=sonoco)
+
+    if not os.path.exists(sonocoDirectory): os.makedirs(sonocoDirectory)
+    
+    for blob in blob_list:
+
+        logging.info("[{}]:[INFO] : Blob name: {}".format(datetime.datetime.utcnow(), blob.name))
+        #check if the path contains a folder structure, create the folder structure
+        blob_name = setblobName(blob,sonoco)
+        blob_client = input_container.get_blob_client(blob.name)
+        dowlload_blob(blob_client,sonocoDirectory+ "/"+blob_name)
+    
+    sendtoPrM(sonocoDirectory,org_key,user,process_mining_api_key,stage2_config)
+
+    blob_client = blob_service_client.get_blob_client(container="stage2", blob="deleteFiles.trigger.txt")
+    input_stream = 'Trigger Delete'
+    blob_client.upload_blob(input_stream, blob_type="BlockBlob")

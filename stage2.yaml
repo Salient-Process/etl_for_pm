@@ -4,12 +4,14 @@ directories:
   currentOrder: currentOrder
   instransit: Intransit
   digital: Digital
+  sonoco: sonoco
   work: /tmp/stage2/.working
   error: /tmp/stage2/errors
 bucket-directories:
   container: stage2
   instransit: stage2/Intransit
   digital: stage2/Digital
+  sonoco: stage2/sonoco
   errors: stage2/errors
 process-mining:
   # api-key: dqa39i20c945f41l
@@ -19,3 +21,4 @@ process-mining:
   project-key-order: current-fp
   project-key-instransit: instransit-fp
   project-key-digital: digital-fp
+  project-key-sonoco: sonoco-fp
