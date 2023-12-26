@@ -189,7 +189,7 @@ def deleteFiles(myblob: func.InputStream):
         blob_client.delete_blob()
 
 
-@app.blob_trigger(arg_name="myblob", path="stage2/sonoco/sendToPrM.trigger.txt",
+@app.blob_trigger(arg_name="myblob", path="stage2/sonoco/SendToPrM.trigger.txt",
                                connection="AzureWebJobsStorage") 
 def sendSonocoToPrM(myblob: func.InputStream):
     logging.info(f"Python blob trigger function processed blob"
@@ -215,10 +215,10 @@ def sendSonocoToPrM(myblob: func.InputStream):
     blob_service_client = BlobServiceClient.from_connection_string(connection_string)
     
     input_container = blob_service_client.get_container_client(container=sonocoContainer)
-    blobCurrent = input_container.get_blob_client("sendToPrM.trigger.txt")
+    blobCurrent = input_container.get_blob_client("SendToPrM.trigger.txt")
     
     if blobCurrent.exists():
-        logging.debug(f"Deleting bucket file: sendToPrM.trigger.txt")
+        logging.debug(f"Deleting bucket file: SendToPrM.trigger.txt")
         blobCurrent.delete_blob()
     
     input_container = blob_service_client.get_container_client(container=container_name)
